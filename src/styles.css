@@ -15,7 +15,7 @@ If your plugin does not need CSS, delete this file.
     display: none;
 }
 
-.workspace-leaf-content[data-type=pdf-preview] .view-content .pdf-page.pdf-page-with-content {
+.workspace-leaf-content[data-type=pdf-preview] .view-content .pdf-page.page-with-content {
     box-shadow: var(--shadow-s);
     display: block;
 }
