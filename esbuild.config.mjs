@@ -1,6 +1,7 @@
 import esbuild from "esbuild";
 import process from "process";
 import builtins from "builtin-modules";
+import { rename } from "fs/promises";
 
 const banner =
 `/*
@@ -43,6 +44,7 @@ const context = await esbuild.context({
 
 if (prod) {
 	await context.rebuild();
+	await rename("main.css", "styles.css");
 	process.exit(0);
 } else {
 	await context.watch();
