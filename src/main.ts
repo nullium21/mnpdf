@@ -5,7 +5,7 @@ export default class PdfPlugin extends Plugin {
 
 	async onload() {
         this.registerView(PdfPreviewView.VIEW_TYPE, leaf => new PdfPreviewView(leaf));
-        this.addRibbonIcon("dice", "PDF Preview", () => this.showPreview());
+        this.addRibbonIcon("book-text", "PDF Export", () => this.showPreview());
 	}
 
 	onunload() {
