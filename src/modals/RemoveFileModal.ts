@@ -1,5 +1,5 @@
 import { App, FuzzySuggestModal, TFile } from "obsidian";
-import { PdfPreviewView } from "./PdfPreviewView";
+import { PdfPreviewView } from "../preview/PdfPreviewView";
 
 export default class RemoveFileModal extends FuzzySuggestModal<TFile> {
     view: PdfPreviewView;

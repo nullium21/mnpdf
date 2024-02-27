@@ -1,6 +1,6 @@
 import { ItemView, WorkspaceLeaf, EventRef } from "obsidian";
-import { PdfPreviewView } from "./PdfPreviewView";
-import { El, Icon } from "./util";
+import { PdfPreviewView } from "../preview/PdfPreviewView";
+import { El, Icon } from "../util";
 
 import "./PdfSidebar.css";
 

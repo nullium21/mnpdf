@@ -2,7 +2,7 @@ import { getCurrentWebContents } from "@electron/remote";
 import { App, Component, MarkdownRenderer, TFile } from "obsidian";
 import { PDFDocumentProxy } from "pdfjs-dist";
 
-import { El } from "./util";
+import { El } from "../util";
 
 type ToPdfCallback = (data: Uint8Array) => void;
 

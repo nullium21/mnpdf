@@ -1,13 +1,13 @@
 import { ItemView, Menu, Notice, TAbstractFile, TFile, TFolder, Workspace, WorkspaceLeaf, WrappedFile, loadPdfJs } from "obsidian";
 import PdfRenderer from "./PdfRenderer";
-import { El, saveFile } from "./util";
+import { El, saveFile } from "../util";
 
 import * as PdfJs from "pdfjs-dist";
 
-import "./styles.css";
-import AddFileModal from "./AddFileModal";
-import RemoveFileModal from "./RemoveFileModal";
-import PdfSidebar from "./PdfSidebar";
+import "./PdfPreviewView.css";
+import AddFileModal from "../modals/AddFileModal";
+import RemoveFileModal from "../modals/RemoveFileModal";
+import PdfSidebar from "../sidebar/PdfSidebar";
 
 declare module "obsidian" {
 

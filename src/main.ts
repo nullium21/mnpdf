@@ -1,6 +1,6 @@
 import { Plugin } from 'obsidian';
-import { PdfPreviewView } from './PdfPreviewView';
-import PdfSidebar from './PdfSidebar';
+import { PdfPreviewView } from './preview/PdfPreviewView';
+import PdfSidebar from './sidebar/PdfSidebar';
 
 export default class PdfPlugin extends Plugin {
 
