@@ -201,6 +201,7 @@ export class PdfPreviewView extends ItemView {
     async openSidebar() {
         const leaf = this.app.workspace.getRightLeaf(false);
         await leaf.setViewState({ type: PdfSidebar.VIEW_TYPE, active: true });
+        (leaf.view as PdfSidebar).viewChanged(this);
         this.app.workspace.revealLeaf(leaf);
     }
 }
