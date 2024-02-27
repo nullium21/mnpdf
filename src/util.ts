@@ -33,7 +33,8 @@ export const El = <K extends keyof HTMLElementTagNameMap>(
 export const saveFile = async (data: Uint8Array, adapter: DataAdapter, opts?: SaveDialogOptions): Promise<string | null> => {
     const { canceled, filePath } = await remote.dialog.showSaveDialog(remote.getCurrentWindow(), opts || {});
     if (canceled || !filePath) return null;
-    await adapter.writeBinary(filePath, data);
+    console.log(36, data);
+    await adapter.writeBinary("Exported PDF.pdf", data);
     // await remote.require("node:fs/promises").writeFile(filePath, data, { flush: true });
     return filePath;
 };

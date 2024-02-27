@@ -4,24 +4,27 @@ import { PDFDocumentProxy } from "pdfjs-dist";
 
 import { El } from "./util";
 
+type ToPdfCallback = (data: Uint8Array) => void;
+
 export default class PdfRenderer {
-    static async toPdf(...el: Node[]): Promise<Uint8Array> {
+    static async toPdf(cb: ToPdfCallback, ...el: Node[]): Promise<void> {
         const target = El(document.body, `div.print.pdf-content`);
         target.append(...el);
 
+        // this doesn't fucking work
+        // idk why
+        // fml
+
         // copy the Node.js `Buffer` over to renderer process
         // since it often gets deleted by the GC before usage
-        return getCurrentWebContents().printToPDF({}).then(buf => {
+        await getCurrentWebContents().printToPDF({}).then(buf => {
             // delete the target to not keep too many copies of it
             target.remove();
-
-            const arr = new Uint8Array(buf.byteLength);
-            buf.copy(arr);
-            return arr;
+            cb(buf);
         });
     }
 
-    static async filesToPdf(app: App, component: Component, files: TFile[]): Promise<Uint8Array> {
+    static async filesToPdf(app: App, component: Component, files: TFile[], cb: ToPdfCallback): Promise<void> {
         const dom = [];
         for (const file of files) {
             const content = await file.vault.cachedRead(file);
@@ -31,7 +34,7 @@ export default class PdfRenderer {
             dom.push(container);
         }
 
-        return this.toPdf(...dom);
+        await this.toPdf(cb, ...dom);
     }
 
     static async renderPdfPage(pdf: PDFDocumentProxy, index: number, canvas: HTMLCanvasElement, maxWidth: number) {

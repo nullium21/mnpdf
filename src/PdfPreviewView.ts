@@ -63,12 +63,12 @@ export class PdfPreviewView extends ItemView {
             menu.addItem(item => item
                 .setIcon('save')
                 .setTitle("Save PDF")
-                .onClick(() => this.save()));
+                .onClick(this.save.bind(this)));
             
             menu.addItem(item => item
                 .setIcon('refresh-cw')
                 .setTitle("Refresh preview")
-                .onClick(() => this.refresh()));
+                .onClick(this.refresh.bind(this)));
             
             menu.addSeparator();
     
@@ -127,6 +127,8 @@ export class PdfPreviewView extends ItemView {
 
     async save() {
         if (!this.pdfData) return;
+        console.log(this.pdfData);
+        // /* this doesn't work */ await this.refresh(); // i hope the GC doesn't turn on like AFTER THIS LINE???? e.g. this should NOT be needed here
         const filePath = await saveFile(this.pdfData, this.app.vault.adapter, {
             filters: [
                 { name: "PDF Files", extensions: ["pdf"] }
@@ -135,16 +137,19 @@ export class PdfPreviewView extends ItemView {
         if (filePath) new Notice(`Saved PDF to ${filePath}!`);
     }
 
-    async refresh() {
+    // why the fuck does this not work ive been trying for like 3 days or smth
+    async refreshPart2(data: Uint8Array) {
+        this.pdfData = new Uint8Array(data.byteLength);
+        this.pdfData.set(data);
+        const pdfjs: typeof PdfJs = await loadPdfJs();
+        const doc = await pdfjs.getDocument(data).promise;
+        this.pdfDoc = doc;
+        this.maxPagesEl.innerText = `of ${doc.numPages}`;
+    }
+
+    refresh() {
         if (this.files.length) {
-            this.pdfData = await PdfRenderer.filesToPdf(this.app, this, this.files);
-
-            const pdfjs: typeof PdfJs = await loadPdfJs();
-            const doc = await pdfjs.getDocument(this.pdfData).promise;
-
-            this.pdfDoc = doc;
-
-            this.maxPagesEl.innerText = `of ${doc.numPages}`;
+            PdfRenderer.filesToPdf(this.app, this, this.files, this.refreshPart2.bind(this));
         } else {
             this.pdfData = this.pdfDoc = null;
             this.maxPagesEl.innerText = '';
