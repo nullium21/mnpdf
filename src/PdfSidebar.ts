@@ -45,6 +45,7 @@ export default class PdfSidebar extends ItemView {
 
     viewChanged(view: PdfPreviewView) {
         this.pdfView = view;
+        view.containerEl.addClass("has-sidebar");
     }
 
     show() {
@@ -53,6 +54,7 @@ export default class PdfSidebar extends ItemView {
 
     hide() {
         this.containerEl.addClass('invalid-view');
+        this.pdfView?.containerEl.removeClass("has-sidebar");
     }
 
     refreshPreview() {

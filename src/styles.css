@@ -19,3 +19,7 @@ If your plugin does not need CSS, delete this file.
     box-shadow: var(--shadow-s);
     display: block;
 }
+
+.workspace-leaf-content[data-type=pdf-preview].has-sidebar .view-actions {
+    display: none;
+}
