@@ -8,6 +8,7 @@ import "./PdfPreviewView.css";
 import AddFileModal from "../modals/AddFileModal";
 import RemoveFileModal from "../modals/RemoveFileModal";
 import PdfSidebar from "../sidebar/PdfSidebar";
+import Emitter from "src/ev";
 
 declare module "obsidian" {
 
@@ -41,6 +42,15 @@ export class PdfPreviewView extends ItemView {
     pageNumberEl: HTMLInputElement;
     maxPagesEl: HTMLElement;
     pageEl: HTMLCanvasElement;
+
+    ev = new Emitter<{
+        'set-page-number': number,
+        'add-file': TFile,
+        'del-file': TFile,
+        'save': string,
+        'refresh': void,
+        'rerender': void
+    }>();
 
     constructor(leaf: WorkspaceLeaf) {
         super(leaf);
@@ -142,6 +152,7 @@ export class PdfPreviewView extends ItemView {
         if (!this.pdfDoc) return false;
         if (pageNumber < 1 || pageNumber > this.pdfDoc.numPages) return false;
         this.pageNumber = pageNumber;
+        this.ev.emit("set-page-number", pageNumber);
         this.rerenderPage();
         if (updateInput) this.pageNumberEl.value = pageNumber.toString();
         return true;
@@ -149,12 +160,14 @@ export class PdfPreviewView extends ItemView {
 
     async addFile(file: TFile) {
         this.files.push(file);
+        this.ev.emit("add-file", file);
         await this.refresh();
         await this.rerenderPage();
     }
 
     async removeFile(file: TFile) {
         this.files.remove(file);
+        this.ev.emit("del-file", file);
         await this.refresh();
         await this.rerenderPage();
     }
@@ -168,7 +181,10 @@ export class PdfPreviewView extends ItemView {
                 { name: "PDF Files", extensions: ["pdf"] }
             ]
         });
-        if (filePath) new Notice(`Saved PDF to ${filePath}!`);
+        if (filePath) {
+            this.ev.emit("save", filePath);
+            new Notice(`Saved PDF to ${filePath}!`);
+        }
     }
 
     // why the fuck does this not work ive been trying for like 3 days or smth
@@ -179,6 +195,7 @@ export class PdfPreviewView extends ItemView {
         const doc = await pdfjs.getDocument(data).promise;
         this.pdfDoc = doc;
         this.maxPagesEl.innerText = `of ${doc.numPages}`;
+        this.ev.emit("refresh", void 0);
     }
 
     refresh() {
@@ -196,6 +213,7 @@ export class PdfPreviewView extends ItemView {
         this.pageNumberEl.value = this.pageNumber.toString();
         await PdfRenderer.renderPdfPage(this.pdfDoc, this.pageNumber, this.pageEl, this.pageEl.parentElement.innerWidth);
         this.pageEl.addClass('page-with-content');
+        this.ev.emit("rerender", void 0);
     }
 
     async openSidebar() {

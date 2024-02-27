@@ -15,6 +15,8 @@ export default class PdfSidebar extends ItemView {
     maxPagesEl: HTMLElement;
 
     leafChangeRef: EventRef;
+    pageNumberRef: number;
+    refreshRef: number;
 
     constructor(leaf: WorkspaceLeaf) {
         super(leaf);
@@ -83,6 +85,8 @@ export default class PdfSidebar extends ItemView {
 
     async onClose() {
         this.pdfView?.containerEl.removeClass("has-sidebar");
+        this.pdfView?.ev.off("set-page-number", this.pageNumberRef);
+        this.pdfView?.ev.off("refresh", this.refreshRef);
         this.pdfView = null;
 
         this.app.workspace.offref(this.leafChangeRef);
@@ -91,7 +95,8 @@ export default class PdfSidebar extends ItemView {
     viewChanged(view: PdfPreviewView) {
         this.pdfView = view;
         // view.containerEl.addClass("has-sidebar");
-        this.registerInterval(window.setInterval(() => this.maxPagesEl.innerText = this.pdfView?.maxPagesEl.innerText || "", 200));
+        this.pageNumberRef = this.pdfView.ev.on("set-page-number", () => this.maxPagesEl.innerText = this.pdfView?.maxPagesEl.innerText || "");
+        this.refreshRef = this.pdfView.ev.on("refresh", () => this.maxPagesEl.innerText = this.pdfView?.maxPagesEl.innerText || "");
     }
 
     show() {
