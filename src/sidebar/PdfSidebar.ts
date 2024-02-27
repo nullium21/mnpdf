@@ -91,6 +91,7 @@ export default class PdfSidebar extends ItemView {
     viewChanged(view: PdfPreviewView) {
         this.pdfView = view;
         // view.containerEl.addClass("has-sidebar");
+        this.registerInterval(window.setInterval(() => this.maxPagesEl.innerText = this.pdfView?.maxPagesEl.innerText || "", 200));
     }
 
     show() {
@@ -105,6 +106,7 @@ export default class PdfSidebar extends ItemView {
     refreshPreview() {
         this.pdfView?.refresh();
         this.pdfView?.rerenderPage();
+        this.registerInterval(window.setInterval(() => this.maxPagesEl.innerText = this.pdfView?.maxPagesEl.innerText || "", 200));
     }
 
     savePdf() {
