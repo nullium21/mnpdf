@@ -1,9 +1,9 @@
 {
-	"id": "better-pdf-export",
-	"name": "Better PDF Export",
-	"version": "0.1.0",
+	"id": "mnpdf",
+	"name": "Multi-Note PDF",
+	"version": "0.1.2",
 	"minAppVersion": "0.15.0",
-	"description": "Brings better, multi-file PDF export.",
+	"description": "Lets you make PDFs from multiple notes at the same time!",
 	"author": "Lina",
 	"authorUrl": "https://github.com/nullium21",
 	"isDesktopOnly": true
