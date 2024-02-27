@@ -1,4 +1,4 @@
-import { ItemView, Menu, Notice, TFile, WorkspaceLeaf, loadPdfJs } from "obsidian";
+import { ItemView, Menu, Notice, TAbstractFile, TFile, TFolder, WorkspaceLeaf, WrappedFile, loadPdfJs } from "obsidian";
 import PdfRenderer from "./PdfRenderer";
 import { El, saveFile } from "./util";
 
@@ -9,9 +9,23 @@ import AddFileModal from "./AddFileModal";
 import RemoveFileModal from "./RemoveFileModal";
 
 declare module "obsidian" {
+
+    type FileWithType = { type: 'file'; file: TFile } | { type: 'folder'; file: TFolder };
+    type WrappedFile = FileWithType & {
+        source?: unknown;
+        icon: string;
+        title: string;
+    };
+
     interface View {
         actionsEl: HTMLElement;
+
+        handleDrop(event: DragEvent, file: WrappedFile, _unknown: unknown): void;
     }
+}
+
+declare global {
+    interface DragEvent extends EventTarget {}
 }
 
 export class PdfPreviewView extends ItemView {
@@ -37,6 +51,10 @@ export class PdfPreviewView extends ItemView {
 
     getDisplayText(): string {
         return "Preview PDF";
+    }
+
+    getIcon(): string {
+        return "book-text";
     }
 
     async onOpen() {
@@ -101,6 +119,16 @@ export class PdfPreviewView extends ItemView {
                 .onClick(() => {
                     this.setPageNumber(this.pageNumber + 1, true);
                 }));
+        }
+    }
+
+    handleDrop(event: DragEvent, f: WrappedFile, _unknown: unknown): boolean | void {
+        if (f.type !== "file") return;
+
+        if (event.type === "dragover") return f.file.extension === "md";
+        else if (event.type === "drop") {
+            this.addFile(f.file);
+            return true;
         }
     }
 
