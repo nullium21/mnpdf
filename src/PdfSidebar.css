@@ -1,0 +1,11 @@
+.pp-sidebar.invalid-view {
+    display: none;
+}
+
+.pp-sidebar ~ .if-invalid-view {
+    display: none;
+}
+
+.pp-sidebar.invalid-view ~ .if-invalid-view {
+    display: block;
+}
