@@ -1,4 +1,4 @@
-import { ItemView, Menu, Notice, TAbstractFile, TFile, TFolder, WorkspaceLeaf, WrappedFile, loadPdfJs } from "obsidian";
+import { ItemView, Menu, Notice, TAbstractFile, TFile, TFolder, Workspace, WorkspaceLeaf, WrappedFile, loadPdfJs } from "obsidian";
 import PdfRenderer from "./PdfRenderer";
 import { El, saveFile } from "./util";
 
@@ -7,6 +7,7 @@ import * as PdfJs from "pdfjs-dist";
 import "./styles.css";
 import AddFileModal from "./AddFileModal";
 import RemoveFileModal from "./RemoveFileModal";
+import PdfSidebar from "./PdfSidebar";
 
 declare module "obsidian" {
 
@@ -78,6 +79,11 @@ export class PdfPreviewView extends ItemView {
 
     onPaneMenu(menu: Menu, source: string): void {
         if (source === 'more-options') {
+            menu.addItem(item => item
+                .setIcon('settings')
+                .setTitle("Open sidebar")
+                .onClick(this.openSidebar.bind(this)));
+
             menu.addItem(item => item
                 .setIcon('save')
                 .setTitle("Save PDF")
@@ -190,5 +196,11 @@ export class PdfPreviewView extends ItemView {
         this.pageNumberEl.value = this.pageNumber.toString();
         await PdfRenderer.renderPdfPage(this.pdfDoc, this.pageNumber, this.pageEl, this.pageEl.parentElement.innerWidth);
         this.pageEl.addClass('page-with-content');
+    }
+
+    async openSidebar() {
+        const leaf = this.app.workspace.getRightLeaf(false);
+        await leaf.setViewState({ type: PdfSidebar.VIEW_TYPE, active: true });
+        this.app.workspace.revealLeaf(leaf);
     }
 }
