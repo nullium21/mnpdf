@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-pdf-export",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"description": "Plugin for Obsidian bringing better PDF export",
 	"main": "main.js",
 	"scripts": {
