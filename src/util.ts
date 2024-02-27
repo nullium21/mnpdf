@@ -1,11 +1,12 @@
 import * as remote from "@electron/remote";
 import { type SaveDialogOptions } from "electron";
-import { DataAdapter, normalizePath } from "obsidian";
+import { DataAdapter, normalizePath, setIcon } from "obsidian";
 
 export const El = <K extends keyof HTMLElementTagNameMap>(
     parent: HTMLElement | null,
     tag: K | `${K}.${string}`,
     opt?: ((el: HTMLElementTagNameMap[K]) => void) | {
+        icon?: string;
         text?: string;
         attr?: { [k: string]: any };
         cb?: (el: HTMLElementTagNameMap[K]) => void;
@@ -22,9 +23,26 @@ export const El = <K extends keyof HTMLElementTagNameMap>(
         el.append(...opt);
     } else {
         opt?.attr && el.setAttrs(opt.attr);
-        opt?.text && (el.innerText = opt.text);
+        opt?.icon && setIcon(el, opt.icon);
+        opt?.text && (el.appendText(opt.text));
         opt?.cb?.(el);
     }
+
+    parent?.appendChild(el);
+    return el;
+};
+
+export const Icon = (
+    parent: HTMLElement | null,
+    icon: string,
+    click?: (this: HTMLElement, ev: MouseEvent) => any
+): HTMLElement => {
+    const el = document.createElement('a');
+
+    el.addClass('clickable-icon');
+    setIcon(el, icon);
+
+    click && el.onClickEvent(click);
 
     parent?.appendChild(el);
     return el;

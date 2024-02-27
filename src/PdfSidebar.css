@@ -1,4 +1,12 @@
-.pp-sidebar.invalid-view {
+.pp-sidebar.icons-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: var(--divider-width) solid var(--divider-color);
+    padding: var(--size-4-2);
+}
+
+.invalid-view>.pp-sidebar {
     display: none;
 }
 
@@ -6,6 +14,6 @@
     display: none;
 }
 
-.pp-sidebar.invalid-view ~ .if-invalid-view {
+.invalid-view>.pp-sidebar ~ .if-invalid-view {
     display: block;
 }
