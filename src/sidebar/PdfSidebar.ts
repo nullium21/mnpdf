@@ -1,6 +1,8 @@
 import { ItemView, WorkspaceLeaf, EventRef } from "obsidian";
 import { PdfPreviewView } from "../preview/PdfPreviewView";
 import { El, Icon } from "../util";
+import AddFileModal from "src/modals/AddFileModal";
+import RemoveFileModal from "src/modals/RemoveFileModal";
 
 import "./PdfSidebar.css";
 
@@ -52,6 +54,8 @@ export default class PdfSidebar extends ItemView {
         this.containerEl.insertBefore(El(null, `div.pp-sidebar.icons-container`, el => {
             Icon(el, 'refresh-cw', this.refreshPreview.bind(this));
             Icon(el, 'save', this.savePdf.bind(this));
+            Icon(el, 'file-plus', this.addFile.bind(this));
+            Icon(el, 'file-x', this.removeFile.bind(this));
         }), this.contentEl);
 
         this.containerEl.insertBefore(El(null, `div.pp-sidebar.icons-container`, el => {
@@ -116,5 +120,13 @@ export default class PdfSidebar extends ItemView {
     nextPage() {
         if (this.pdfView?.setPageNumber(this.pdfView.pageNumber + 1))
             this.pageNumberEl.value = this.pdfView.pageNumber.toString();
+    }
+
+    addFile() {
+        this.pdfView && new AddFileModal(this.app, this.pdfView).open();
+    }
+
+    removeFile() {
+        this.pdfView && new RemoveFileModal(this.app, this.pdfView).open();
     }
 }
