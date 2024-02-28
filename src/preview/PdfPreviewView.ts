@@ -54,6 +54,32 @@ export class PdfPreviewView extends ItemView {
 
     constructor(leaf: WorkspaceLeaf) {
         super(leaf);
+
+        this.ev.on('add-file', () => {
+            this.refresh();
+            this.rerenderPage();
+        });
+
+        this.ev.on('del-file', () => {
+            this.refresh();
+            this.rerenderPage();
+        });
+
+        this.ev.on('set-page-number', () => {
+            this.rerenderPage();
+        });
+
+        this.ev.on('save', filePath => {
+            new Notice(`Saved PDF to ${filePath}!`);
+        });
+
+        this.ev.on('refresh', () => {
+            this.maxPagesEl.innerText = `of ${this.pdfDoc?.numPages}`;
+        });
+
+        this.ev.on('rerender', () => {
+            this.pageEl.addClass('page-with-content');
+        });
     }
 
     getViewType(): string {
@@ -153,7 +179,6 @@ export class PdfPreviewView extends ItemView {
         if (pageNumber < 1 || pageNumber > this.pdfDoc.numPages) return false;
         this.pageNumber = pageNumber;
         this.ev.emit("set-page-number", pageNumber);
-        this.rerenderPage();
         if (updateInput) this.pageNumberEl.value = pageNumber.toString();
         return true;
     }
@@ -161,15 +186,11 @@ export class PdfPreviewView extends ItemView {
     async addFile(file: TFile) {
         this.files.push(file);
         this.ev.emit("add-file", file);
-        await this.refresh();
-        await this.rerenderPage();
     }
 
     async removeFile(file: TFile) {
         this.files.remove(file);
         this.ev.emit("del-file", file);
-        await this.refresh();
-        await this.rerenderPage();
     }
 
     async save() {
@@ -181,10 +202,7 @@ export class PdfPreviewView extends ItemView {
                 { name: "PDF Files", extensions: ["pdf"] }
             ]
         });
-        if (filePath) {
-            this.ev.emit("save", filePath);
-            new Notice(`Saved PDF to ${filePath}!`);
-        }
+        if (filePath) this.ev.emit("save", filePath);
     }
 
     // why the fuck does this not work ive been trying for like 3 days or smth
@@ -194,7 +212,6 @@ export class PdfPreviewView extends ItemView {
         const pdfjs: typeof PdfJs = await loadPdfJs();
         const doc = await pdfjs.getDocument(data).promise;
         this.pdfDoc = doc;
-        this.maxPagesEl.innerText = `of ${doc.numPages}`;
         this.ev.emit("refresh", void 0);
     }
 
@@ -205,6 +222,7 @@ export class PdfPreviewView extends ItemView {
             this.pdfData = this.pdfDoc = null;
             this.maxPagesEl.innerText = '';
             this.pageEl.removeClass('page-with-content');
+            this.ev.emit("refresh", void 0);
         }
     }
 
@@ -212,7 +230,6 @@ export class PdfPreviewView extends ItemView {
         if (!this.pdfDoc || !this.pageEl.parentElement) return;
         this.pageNumberEl.value = this.pageNumber.toString();
         await PdfRenderer.renderPdfPage(this.pdfDoc, this.pageNumber, this.pageEl, this.pageEl.parentElement.innerWidth);
-        this.pageEl.addClass('page-with-content');
         this.ev.emit("rerender", void 0);
     }
 
